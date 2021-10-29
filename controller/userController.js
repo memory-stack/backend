@@ -1,6 +1,7 @@
 const User = require('../models/user.js');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 // function for sending email using NodeMail
 const sendEmail = (email, authToken) => {
@@ -152,5 +153,73 @@ module.exports = {
                 message: error
             });
         })
+    }, 
+
+    login : (req, res) => {
+        var username = req.body.username;
+        var password = req.body.password;
+    
+        User.find({ username: username })
+        .exec()
+        .then(result => {
+            if (result.length) {
+                var email = result[0].email;
+
+                console.log(result);
+                console.log(password);
+                console.log(result[0].password);
+                console.log(email);
+
+                //password match and jwt generation
+                bcrypt.compare(password, result[0].password)
+                    .then(comparedResult => {
+                        const uniqueString = jwt.sign({ email, username }, process.env.JWT_ACC_ACTIVATE1, { expiresIn: '2h' });
+                        console.log(uniqueString);
+                        console.log(comparedResult);
+
+                        if (comparedResult) {
+                            if (!result[0].isVerified) {
+                                res.status(200).json({
+                                    message: "Please vefify your account to login",
+                                    result: "false"
+                                })
+                            }
+                            else {
+                                res.status(200).json({
+                                    message: uniqueString,
+                                    result: "true"
+                                })
+                            }
+                        }
+                        else {
+                            res.status(200).json({
+                                message: "Incorrect username or password",
+                                result: "false"
+                            })
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        res.status(500).json({
+                            message: error,
+                        })
+                    })
+
+
+            }
+            else {
+                console.log(username);
+                res.status(200).json({
+                    message: "Incorrect username or password",
+                    result: "false"
+                })
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({
+                message: error
+            });
+        });
     }
 };
