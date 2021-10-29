@@ -2,6 +2,7 @@ const User = require('../models/user.js');
 const jwt = require('jsonwebtoken');
 
 module.exports = {
+    
     displayLogs : (req, res) => {
         var authToken = req.header("Authorization");
         authToken = authToken.substr(7, authToken.length);
