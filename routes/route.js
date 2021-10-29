@@ -23,6 +23,12 @@ mongoose.connect(uri)
     });
 
 
+router.get('/', (req, res)=>{
+    res.status(200).json({
+        message: 'Server is up!'
+    });
+});
+
 //username taken or not
 router.post('/userExists', (req, res) => {
     var username = req.body.username;
