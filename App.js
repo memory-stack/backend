@@ -1,8 +1,6 @@
-const { application } = require('express');
 const express = require('express');
 const app = express();
 const apiRoutes = require('./routes/Route.js');
-const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 
