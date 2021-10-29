@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router('router');
-const User = require('../models/user');
+const User = require('../models/user.js');
 const mongoose = require('mongoose');
 const { restart } = require('nodemon');
 const bcrypt = require('bcrypt');
