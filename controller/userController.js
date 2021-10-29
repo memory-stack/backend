@@ -221,38 +221,5 @@ module.exports = {
                 message: error
             });
         });
-    },
-
-    displayLogs : (req, res) => {
-        var authToken = req.header("Authorization");
-        authToken = authToken.substr(7, authToken.length);
-        console.log(authToken);
-        jwt.verify(authToken, process.env.JWT_ACC_ACTIVATE1, (error, decodedToken) => {
-            if (error) {
-                console.log(error);
-                return res.status(500).json({
-                    error: 'Incorrect or expired link.'
-                });
-            }
-            else {
-                //var username = req.body.username;
-                const { username } = decodedToken;
-                console.log(username);
-    
-                User.find({ username: username })
-                .exec()
-                .then(result => {
-                    console.log(result[0].logs);
-                    res.status(200).json(result[0].logs);
-                })
-                .catch(error => {
-                    console.log(error);
-                    res.status(500).json({
-                        message: "Something bad happened.",
-                        error: error
-                    });
-                });
-            }
-        })
     }
 };
