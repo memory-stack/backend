@@ -34,7 +34,7 @@ module.exports = {
         });
     },
 
-    thought : (req, res) => {
+    allthought : (req, res) => {
         var username = req.body.username;
     
         User.find({ username: username })
