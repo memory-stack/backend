@@ -1,11 +1,18 @@
 const http = require("http");
-const { Server } = require("socket.io");
+// const socket = require("socket.io");
 const Log = require("./models/log");
 require("dotenv").config();
 const port = process.env.PORT || 3000;
 const app = require("./App.js");
 const server = http.createServer(app);
-const io = new Server(server);
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  },
+});
+// socket.set('origins','*:*');
+// const io = new socket.Server(server);
 
 io.on("connection", async (socket) => {
   console.log("A user connected: ", socket.id);
