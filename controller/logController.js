@@ -74,9 +74,11 @@ module.exports = {
                 log.save().then(async (result) => {
                   creator.createdLogs.push(log);
                   await creator.save();
+                  const logNumber = creator.createdLogs.length;
                   return res.status(200).json({
                     success: true,
                     message: "Log created",
+                    logNumber: logNumber,
                   });
                 });
               })
