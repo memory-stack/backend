@@ -24,5 +24,6 @@ router.post('/setThought'       , thoughtController.setThought);
 router.post('/thought'          , thoughtController.allthought); //dont upload on github, done - handled if no user is matched
 router.post('/setAbout'         , aboutController.setAbout);
 router.post('/about'            , aboutController.about); //dont upload on github
+router.get ('/user/:username'    , userController.getUserDetails);
 
 module.exports = router;
