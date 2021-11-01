@@ -173,7 +173,7 @@ module.exports = {
                 //password match and jwt generation
                 bcrypt.compare(password, result[0].password)
                     .then(comparedResult => {
-                        const uniqueString = jwt.sign({ email, username }, process.env.JWT_ACC_ACTIVATE1, { expiresIn: '2h' });
+                        const uniqueString = jwt.sign({ email, username }, process.env.JWT_ACC_ACTIVATE1, {});
                         console.log(uniqueString);
                         console.log(comparedResult);
 
