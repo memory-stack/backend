@@ -13,10 +13,12 @@ const userSchema = mongoose.Schema(
       type: String,
       default: "",
     },
-    thought: {
-      type: Array,
-      default: [],
-    },
+    thought: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Thought",
+      },
+    ],
     createdLogs: [
       {
         type: mongoose.Schema.Types.ObjectId,
