@@ -6,7 +6,7 @@ const thoughtSchema = new mongoose.Schema({
     required: true,
   },
   creator: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
   createdAt: {
