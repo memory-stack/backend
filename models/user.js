@@ -13,7 +13,7 @@ const userSchema = mongoose.Schema(
       type: String,
       default: "",
     },
-    thought: [
+    createdThoughts: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Thought",
