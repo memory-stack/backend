@@ -18,7 +18,7 @@ router.post('/userExists'       , userController.userExists);  //username exists
 router.get ('/verify/:authToken', userController.verifyToken);  // verify the auth token
 router.post('/signup'           , userController.signup);
 router.post('/login'            , userController.login);
-router.post('/displayLogs'      , logController.displayLogs);
+router.get ('/displayLogs/:username'      , logController.displayLogs);
 router.post('/createLog'        , logController.createLog); //done - handled if no user is matched, if no new loglength is 0
 router.post('/setThought'       , thoughtController.setThought);
 router.get ('/thought/:username'          , thoughtController.allThought); //dont upload on github, done - handled if no user is matched
