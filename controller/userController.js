@@ -97,7 +97,7 @@ module.exports = {
               .then((result) => {
                 console.log(result);
                 res.redirect(
-                  "https://memorystack.herokuapp.com/verification-success"
+                  "https://memory-stack.herokuapp.com/verification-success"
                 );
               })
               .catch((error) => {
@@ -231,12 +231,17 @@ module.exports = {
     try {
       const username = req.params.username;
       const result = await User.findOne({ username: username }).populate(
-        "createdLogs"
+        "createdThoughts"
       );
       if (!result) {
         return res.status(404).json({ message: "No such user found" });
       }
-      return res.status(200).json({ user: result });
+      const userInfo = {
+        about:result['about'],
+        thoughts:[...result['createdThoughts']]
+      };
+      console.log(userInfo);
+      return res.status(200).json({ user: userInfo });
     } catch (error) {
       return res.status(500).json({ message: error });
     }
