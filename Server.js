@@ -16,11 +16,11 @@ const io = require("socket.io")(server, {
 
 io.on("connection", async (socket) => {
   console.log("A user connected: ", socket.id);
-  const allLogs = await Log.find();
+  const allLogs = await Log.find().populate('creator','username');
   socket.emit("recentLogs", allLogs);
 
   Log.watch().on("change", async (chnage) => {
-    const allLogs = await Log.find();
+    const allLogs = await Log.find().populate('creator','username');
     socket.emit("recentLogs", allLogs);
   });
 
