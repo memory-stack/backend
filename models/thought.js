@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
-const logSchema = new mongoose.Schema({
-  logMessage: {
+const thoughtSchema = new mongoose.Schema({
+  thought: {
     type: String,
     required: true,
   },
@@ -15,4 +15,4 @@ const logSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Log", logSchema);
+module.exports = mongoose.model("Thought", thoughtSchema);

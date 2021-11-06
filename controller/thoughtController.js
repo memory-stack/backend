@@ -1,63 +1,60 @@
-const User = require('../models/user.js');
-const jwt = require('jsonwebtoken');
+const User = require("../models/user.js");
+const Thought = require("../models/thought");
+const jwt = require("jsonwebtoken");
 
 module.exports = {
-    
-    setThought : (req, res) => {
+  setThought: async (req, res) => {
+    try {
+      let authToken = req.header("Authorization");
+      authToken = authToken.substr(7, authToken.length);
 
-        var username = req.body.username;
-        var thought = req.body.thought;
-        var timeNow = new Date();
-    
-        console.log(thought);
-    
-        User.update({ username: username }, { $set: { "thought": [{ "timestamp": timeNow, "thought": thought }] } })
-        .exec()
-        .then(result => {
-            if (result.matchedCount) {
-                console.log(result);
-                res.status(200).json(result);
-            }
-            else {
-                console.log("No user as " + username + " found");
-                res.status(200).json({
-                    message: "No user as " + username + " found"
-                });
-            }
-        })
-        .catch(error => {
-            console.log(err);
-            res.status(500).json({
-                message: "something bad happened.",
-                error: error
-            });
-        });
-    },
+      let decodedToken = jwt.verify(authToken, process.env.JWT_ACC_ACTIVATE1);
+      const { email, username } = decodedToken;
+      const newThought = req.body.thought;
 
-    allthought : (req, res) => {
-        var username = req.body.username;
-    
-        User.find({ username: username })
-            .exec()
-            .then(result => {
-                if (result.length) {
-                    console.log(result[0].thought);
-                    res.status(200).json(result[0].thought);
-                }
-                else {
-                    console.log("No user as " + username + " found");
-                    res.status(200).json({
-                        message: "No user as " + username + " found"
-                    });
-                }
-            })
-            .catch(error => {
-                console.log(err);
-                res.status(500).json({
-                    message: "something bad happened.",
-                    error: error
-                });
-            })
+      if (newThought == undefined || newThought.length === 0) {
+        throw "No thought received";
+      }
+
+      const creator = await User.findOne({ email: email });
+      const thought = new Thought({
+        thought: newThought,
+        creator: creator._doc._id,
+      });
+
+      await thought.save();
+      creator.createdThoughts.push(thought);
+      await creator.save();
+      const thoughtNumber = creator.createdThoughts.length;
+      return res.json({
+        success: true,
+        message: "Added thought",
+        thoughtNumber: thoughtNumber,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.json({ success: false, message: error });
     }
+  },
 
+  allThought: async (req, res) => {
+    try {
+      let authToken = req.header("Authorization");
+      authToken = authToken.substr(7, authToken.length);
+
+      let decodedToken = jwt.verify(authToken, process.env.JWT_ACC_ACTIVATE1);
+      const username = req.params.username;
+
+      const result = await User.findOne({ username: username }).populate(
+        "createdThoughts"
+      );
+
+      const thoughts = [...result["createdThoughts"]];
+
+      return res.json({ success: true, result: thoughts });
+    } catch (error) {
+      console.error(error);
+      return res.json({ success: false, message: error });
+    }
+  },
 };
