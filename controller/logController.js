@@ -82,8 +82,8 @@ module.exports = {
   },
   logView: async (req, res) => {
     try {
-      let authToken = req.header("Authorization");
-      authToken = authToken.substr(7, authToken.length);
+      // let authToken = req.header("Authorization");
+      // authToken = authToken.substr(7, authToken.length);
 
       // const decodedToken = jwt.verify(authToken, process.env.JWT_ACC_ACTIVATE1);
 
