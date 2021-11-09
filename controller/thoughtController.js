@@ -2,6 +2,16 @@ const User = require("../models/user.js");
 const Thought = require("../models/thought");
 const jwt = require("jsonwebtoken");
 
+function checkValidDate(lastUpdatedDay, today){
+  const tempLastUpdatedDay = lastUpdatedDay.toISOString().substring(0,10);
+  const tempToday = today.toISOString().substring(0,10);
+
+  if(tempLastUpdatedDay>=tempToday) 
+    return false;
+  else 
+    return true;
+}
+
 module.exports = {
   setThought: async (req, res) => {
     try {
@@ -15,6 +25,25 @@ module.exports = {
       if (newThought == undefined || newThought.length === 0) {
         throw "No thought received";
       }
+
+      //populating thoughts
+      const result = await User.find({username: username}).populate('createdThoughts', 'createdAt thought').sort({"createdAt": -1});
+
+      //checking if thought is entered for the first time
+      if(result[0].createdThoughts.length != 0){
+        //getting date of last entered thought
+        const lastUpdatedDay=result[0].createdThoughts[result[0].createdThoughts.length-1].createdAt;
+        const today = new Date();
+
+        //if false, thought for that day already exists
+        if(!checkValidDate(lastUpdatedDay, today)){
+          return res.json({
+            success: false,
+            message: "Thought for the day already exists."
+          })
+        }
+      }
+      
 
       const creator = await User.findOne({ email: email });
       const thought = new Thought({
