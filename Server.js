@@ -20,8 +20,11 @@ io.on("connection", async (socket) => {
   socket.emit("recentLogs", allLogs);
 
   Log.watch().on("change", async (change) => {
-    console.log(change["fullDocument"]);
-    socket.emit("newLog", change["fullDocument"]);
+    const logChange = { ...change["fullDocument"] };
+    const newLog = new Log(logChange);
+    await newLog.populate("creator", "username");
+    console.log(newLog);
+    socket.emit("newLog", newLog);
   });
 
   socket.on("disconnect", () => {
