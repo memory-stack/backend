@@ -23,7 +23,6 @@ io.on("connection", async (socket) => {
     const logChange = { ...change["fullDocument"] };
     const newLog = new Log(logChange);
     await newLog.populate("creator", "username");
-    console.log(newLog);
     socket.emit("newLog", newLog);
   });
 
