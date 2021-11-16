@@ -57,7 +57,7 @@ module.exports = {
       return res.json({
         success: true,
         message: "Log created",
-        // logNumber: logNumber,
+        logNumber: logNumber,
       });
     } catch (error) {
       console.error(error);
