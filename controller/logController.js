@@ -24,61 +24,45 @@ module.exports = {
     }
   },
 
-  createLog: (req, res) => {
-    var authToken = req.header("Authorization");
-    authToken = authToken.substr(7, authToken.length);
-    console.log(authToken);
-    jwt.verify(
-      authToken,
-      process.env.JWT_ACC_ACTIVATE1,
-      (error, decodedToken) => {
-        if (error) {
-          console.log(error);
-          return res.status(500).json({
-            error: "Incorrect or Expired Link.",
-          });
-        } else {
-          console.log("print log");
-          const { email, username } = decodedToken;
-          console.log(email);
-          console.log(username);
+  createLog: async (req, res) => {
+    try {
+      let authToken = req.header("Authorization");
+      authToken = authToken.substr(7, authToken.length);
+      const decodedToken = jwt.verify(authToken, process.env.JWT_ACC_ACTIVATE1);
 
-          //var username = req.body.username;
-          var newlog = req.body.text;
-          var timeNow = new Date();
-
-          console.log(newlog);
-
-          if (newlog != undefined && newlog.length) {
-            User.findOne({ email: email })
-              .then((creator) => {
-                const log = new Log({
-                  logMessage: newlog,
-                  creator: creator._doc._id,
-                });
-                log.save().then(async (result) => {
-                  creator.createdLogs.push(log);
-                  await creator.save();
-                  const logNumber = creator.createdLogs.length;
-                  return res.status(200).json({
-                    success: true,
-                    message: "Log created",
-                    logNumber: logNumber,
-                  });
-                });
-              })
-              .catch((err) => {
-                return res.status(500).json({ message: err });
-              });
-          } else {
-            console.log("No log found. Please enter a log.");
-            res.status(200).json({
-              message: "No log found. Please enter a log.",
-            });
-          }
-        }
+      const { email, username } = decodedToken;
+      const newLog = req.body.text.trim();
+      console.log(newLog);
+      if (newLog == undefined || newLog.length === 0) {
+        throw "Empty Log";
       }
-    );
+
+      const creator = await User.findOne({ email: email });
+      const numberOfThoughts = creator.createdThoughts.length;
+      if (numberOfThoughts === 0) {
+        throw "Didn't set thought of the day";
+      }
+      const lastThoughtDate = new Date(creator.createdThoughts[numberOfThoughts - 1].getTimestamp());
+      const today = new Date();
+      if (today.setUTCHours(00, 00, 00, 000) != lastThoughtDate.setUTCHours(00, 00, 00, 000)) {
+        throw "Didn't set thought of the day";
+      }
+
+      const log = new Log({ logMessage: newLog, creator: creator._doc._id });
+      await log.save();
+      creator.createdLogs.push(log);
+      await creator.save();
+      const logNumber = creator.createdLogs.length;
+
+      return res.json({
+        success: true,
+        message: "Log created",
+        logNumber: logNumber,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.json({ success: false, error: error });
+    }
   },
   logView: async (req, res) => {
     try {
@@ -93,21 +77,21 @@ module.exports = {
       }
 
       let dateObj = new Date(date);
-  
+
       let year = dateObj.getUTCFullYear();
       let month = dateObj.getUTCMonth() + 1;
       let day = dateObj.getUTCDate();
       const newDate = `${year}-${month}-${day}`;
       console.log(newDate);
-      console.log(new Date(newDate).setUTCHours(00, 00, 00,000));
-      console.log(new Date(newDate).setUTCHours(23, 59, 59,999));
+      console.log(new Date(newDate).setUTCHours(00, 00, 00, 000));
+      console.log(new Date(newDate).setUTCHours(23, 59, 59, 999));
       const result = await User.findOne({ username: username })
         .populate({
           path: "createdThoughts",
           match: {
             createdAt: {
-              $gte: new Date(newDate).setUTCHours(00, 00, 00,000),
-              $lte: new Date(newDate).setUTCHours(23, 59, 59,999),
+              $gte: new Date(newDate).setUTCHours(00, 00, 00, 000),
+              $lte: new Date(newDate).setUTCHours(23, 59, 59, 999),
             },
           },
         })
@@ -115,8 +99,8 @@ module.exports = {
           path: "createdLogs",
           match: {
             createdAt: {
-              $gte: new Date(newDate).setUTCHours(00, 00, 00,000),
-              $lte: new Date(newDate).setUTCHours(23, 59, 59,999),
+              $gte: new Date(newDate).setUTCHours(00, 00, 00, 000),
+              $lte: new Date(newDate).setUTCHours(23, 59, 59, 999),
             },
           },
         });
