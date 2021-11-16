@@ -38,6 +38,16 @@ module.exports = {
       }
 
       const creator = await User.findOne({ email: email });
+      const numberOfThoughts = creator.createdThoughts.length;
+      if (numberOfThoughts === 0) {
+        throw "Didn't set thought of the day";
+      }
+      const lastThoughtDate = new Date(creator.createdThoughts[numberOfThoughts - 1].getTimestamp());
+      const today = new Date();
+      if (today.setUTCHours(00, 00, 00, 000) != lastThoughtDate.setUTCHours(00, 00, 00, 000)) {
+        throw "Didn't set thought of the day";
+      }
+
       const log = new Log({ logMessage: newLog, creator: creator._doc._id });
       await log.save();
       creator.createdLogs.push(log);
@@ -47,7 +57,7 @@ module.exports = {
       return res.json({
         success: true,
         message: "Log created",
-        logNumber: logNumber,
+        // logNumber: logNumber,
       });
     } catch (error) {
       console.error(error);
