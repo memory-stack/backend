@@ -93,19 +93,21 @@ module.exports = {
       }
 
       let dateObj = new Date(date);
-      let year = dateObj.getFullYear();
-      let month = dateObj.getMonth() + 1;
-      let day = dateObj.getDate();
+  
+      let year = dateObj.getUTCFullYear();
+      let month = dateObj.getUTCMonth() + 1;
+      let day = dateObj.getUTCDate();
       const newDate = `${year}-${month}-${day}`;
       console.log(newDate);
-      console.log(new Date(newDate));
+      console.log(new Date(newDate).setUTCHours(00, 00, 00,000));
+      console.log(new Date(newDate).setUTCHours(23, 59, 59,999));
       const result = await User.findOne({ username: username })
         .populate({
           path: "createdThoughts",
           match: {
             createdAt: {
-              $gte: new Date(newDate).setHours(00, 00, 00),
-              $lte: new Date(newDate).setHours(23, 59, 59),
+              $gte: new Date(newDate).setUTCHours(00, 00, 00,000),
+              $lte: new Date(newDate).setUTCHours(23, 59, 59,999),
             },
           },
         })
@@ -113,8 +115,8 @@ module.exports = {
           path: "createdLogs",
           match: {
             createdAt: {
-              $gte: new Date(newDate).setHours(00, 00, 00),
-              $lte: new Date(newDate).setHours(23, 59, 59),
+              $gte: new Date(newDate).setUTCHours(00, 00, 00,000),
+              $lte: new Date(newDate).setUTCHours(23, 59, 59,999),
             },
           },
         });
