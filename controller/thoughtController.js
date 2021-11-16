@@ -2,14 +2,12 @@ const User = require("../models/user.js");
 const Thought = require("../models/thought");
 const jwt = require("jsonwebtoken");
 
-function checkValidDate(lastUpdatedDay, today){
-  const tempLastUpdatedDay = lastUpdatedDay.toISOString().substring(0,10);
-  const tempToday = today.toISOString().substring(0,10);
+function checkValidDate(lastUpdatedDay, today) {
+  const tempLastUpdatedDay = lastUpdatedDay.toISOString().substring(0, 10);
+  const tempToday = today.toISOString().substring(0, 10);
 
-  if(tempLastUpdatedDay>=tempToday) 
-    return false;
-  else 
-    return true;
+  if (tempLastUpdatedDay >= tempToday) return false;
+  else return true;
 }
 
 module.exports = {
@@ -20,32 +18,26 @@ module.exports = {
 
       let decodedToken = jwt.verify(authToken, process.env.JWT_ACC_ACTIVATE1);
       const { email, username } = decodedToken;
-      const newThought = req.body.thought;
+      const newThought = req.body.thought.trim();
 
       if (newThought == undefined || newThought.length === 0) {
         throw "No thought received";
       }
 
-      //populating thoughts
-      const result = await User.find({username: username}).populate('createdThoughts', 'createdAt thought').sort({"createdAt": -1});
+      const creator = await User.findOne({ email: email });
+      const numberOfThoughts = creator.createdThoughts.length;
 
       //checking if thought is entered for the first time
-      if(result[0].createdThoughts.length != 0){
+      if (numberOfThoughts != 0) {
         //getting date of last entered thought
-        const lastUpdatedDay=result[0].createdThoughts[result[0].createdThoughts.length-1].createdAt;
+        const lastThoughtDate = new Date(creator.createdThoughts[numberOfThoughts - 1].getTimestamp());
         const today = new Date();
 
-        //if false, thought for that day already exists
-        if(!checkValidDate(lastUpdatedDay, today)){
-          return res.json({
-            success: false,
-            message: "Thought for the day already exists."
-          })
+        //if true, thought for that day already exists
+        if (today.setUTCHours(00, 00, 00, 000) == lastThoughtDate.setUTCHours(00, 00, 00, 000)) {
+          throw "Thought for the day already exists.";
         }
       }
-      
-
-      const creator = await User.findOne({ email: email });
       const thought = new Thought({
         thought: newThought,
         creator: creator._doc._id,
