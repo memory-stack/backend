@@ -93,9 +93,9 @@ module.exports = {
       }
 
       let dateObj = new Date(date);
-      let year = dateObj.getUTCFullYear();
-      let month = dateObj.getUTCMonth() + 1;
-      let day = dateObj.getUTCDate();
+      let year = dateObj.getFullYear();
+      let month = dateObj.getMonth() + 1;
+      let day = dateObj.getDate();
       const newDate = `${year}-${month}-${day}`;
       console.log(newDate);
       console.log(new Date(newDate));
