@@ -25,19 +25,19 @@ module.exports = {
       }
 
       const creator = await User.findOne({ email: email });
-      const numberOfThoughts = creator.createdThoughts.length;
+      // const numberOfThoughts = creator.createdThoughts.length;
 
       //checking if thought is entered for the first time
-      if (numberOfThoughts != 0) {
-        //getting date of last entered thought
-        const lastThoughtDate = new Date(creator.createdThoughts[numberOfThoughts - 1].getTimestamp());
-        const today = new Date();
+      // if (numberOfThoughts != 0) {
+      //getting date of last entered thought
+      // const lastThoughtDate = new Date(creator.createdThoughts[numberOfThoughts - 1].getTimestamp());
+      // const today = new Date();
 
-        //if true, thought for that day already exists
-        if (today.setUTCHours(00, 00, 00, 000) == lastThoughtDate.setUTCHours(00, 00, 00, 000)) {
-          throw "Thought for the day already exists.";
-        }
-      }
+      //if true, thought for that day already exists
+      //   if (today.setUTCHours(00, 00, 00, 000) == lastThoughtDate.setUTCHours(00, 00, 00, 000)) {
+      //     throw "Thought for the day already exists.";
+      //   }
+      // }
       const thought = new Thought({
         thought: newThought,
         creator: creator._doc._id,
