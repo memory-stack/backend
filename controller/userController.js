@@ -186,7 +186,7 @@ module.exports = {
   login: async (req, res) => {
     try {
       let username = req.body.username.trim();
-      let password = req.body.password.trim();
+      let password = req.body.password;
 
       if (username === undefined || username.length === 0)
         throw "No username given";
