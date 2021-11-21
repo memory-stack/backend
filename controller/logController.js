@@ -23,8 +23,37 @@ module.exports = {
       return res.json({ success: false, message: error });
     }
   },
+  todaysLogs: async (req, res) => {
+    try {
+      let authToken = req.header("Authorization");
+      authToken = authToken.substr(7, authToken.length);
 
-  createLog: async (req, res) => {
+      const decodedToken = jwt.verify(authToken, process.env.JWT_ACC_ACTIVATE1);
+      const { email, username } = decodedToken;
+
+      const result = await User.findOne({ email: email }, { createdLogs: 1 }).populate({
+        path: "createdLogs",
+        match: {
+          createdAt: {
+            $gte: new Date().setUTCHours(00, 00, 00, 000),
+            $lte: new Date().setUTCHours(23, 59, 59, 999),
+          },
+        },
+        options:{sort:{createdAt:1}}
+      });
+      const logs= result['createdLogs'].map(log=>{
+        return{
+          logMessage:log.logMessage,
+          createdAt:log.createdAt
+        }
+      });
+      return res.json({ success: true ,logs:logs});
+    } catch (error) {
+      console.error(error);
+      return res.json({ success: false, error: error });
+    }
+  },
+    createLog: async (req, res) => {
     try {
       let authToken = req.header("Authorization");
       authToken = authToken.substr(7, authToken.length);
@@ -85,7 +114,7 @@ module.exports = {
       console.log(newDate);
       console.log(new Date(newDate).setUTCHours(00, 00, 00, 000));
       console.log(new Date(newDate).setUTCHours(23, 59, 59, 999));
-      const result = await User.findOne({ username: username })
+      const result = await User.findOne({ username: username }, {})
         .populate({
           path: "createdThoughts",
           match: {

@@ -26,5 +26,6 @@ router.post('/setAbout'         , aboutController.setAbout);
 router.get ('/about'            , aboutController.about); //dont upload on github
 router.get ('/user/:username'    , userController.getUserDetails);
 router.post('/logView'           , logController.logView); 
+router.get ('/todaysLogs'        , logController.todaysLogs);     
 
 module.exports = router;
