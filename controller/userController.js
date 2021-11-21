@@ -168,7 +168,7 @@ module.exports = {
       .then((result) => {
         if (result.length) {
           var email = result[0].email;
-
+          var _id=result[0]._id;
           console.log(result);
           console.log(password);
           console.log(result[0].password);
@@ -179,7 +179,7 @@ module.exports = {
             .compare(password, result[0].password)
             .then((comparedResult) => {
               const uniqueString = jwt.sign(
-                { email, username },
+                { email, username ,_id},
                 process.env.JWT_ACC_ACTIVATE1,
                 {}
               );
