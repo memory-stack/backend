@@ -3,6 +3,12 @@ const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
+const validateEmail = (email) => {
+  const re =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
+};
+
 // function for sending email using NodeMail
 const sendEmail = (email, authToken) => {
   const gmail_email = process.env.GMAIL_EMAIL;
@@ -124,39 +130,57 @@ module.exports = {
   },
 
   signup: async (req, res) => {
-    var username = req.body.username;
-    var password = req.body.password;
-    var email = req.body.email;
+    try {
+      let username = req.body.username.trim();
+      let password = req.body.password.trim();
+      let email = req.body.email.trim();
+      let about = req.body.about.trim();
 
-    const user = new User({
-      username: username,
-      password: password,
-      email: email,
-    });
+      if (username === undefined || username.length === 0)
+        throw "No username given";
+      if (password === undefined || password.length === 0)
+        throw "No password given";
+      if (email === undefined || email.length === 0) 
+        throw "No email given";
+      if (about === undefined || about.length === 0) 
+        throw "No about given";
 
-    console.log(username);
-    console.log(password);
-    console.log(email);
+      email = email.toLowerCase();
+      console.log(email);
+      if (!validateEmail(email)) throw "Email is invalid";
 
-    //then?
-    user
-      .save()
-      .then((result1) => {
-        const authToken = jwt.sign(
-          { email, username },
-          process.env.JWT_ACC_ACTIVATE
-        );
-        const result = sendEmail(email, authToken);
-        res.status(200).json({
-          message: "user created.",
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-        res.status(500).json({
-          message: error,
-        });
+      let user = await User.findOne({
+        $or: [{ email: email }, { username: username }],
       });
+
+      if (user && user.email == email) {
+        throw "User with this email already exist";
+      }
+      if (user && user.username == username) {
+        throw "User with this username already exist";
+      }
+
+      user = new User({
+        username: username,
+        password: password,
+        about: about,
+        email: email,
+      });
+
+      await user.save();
+      const _id = user._id;
+      
+      const authToken = jwt.sign(
+        { email, username, _id },
+        process.env.JWT_ACC_ACTIVATE
+      );
+
+      const result = sendEmail(email, authToken);
+      return res.json({ success: true, message: "User created" });
+    } catch (error) {
+      console.error(error);
+      return res.json({ success: false, error: error });
+    }
   },
 
   login: (req, res) => {
@@ -168,7 +192,7 @@ module.exports = {
       .then((result) => {
         if (result.length) {
           var email = result[0].email;
-          var _id=result[0]._id;
+          var _id = result[0]._id;
           console.log(result);
           console.log(password);
           console.log(result[0].password);
@@ -179,7 +203,7 @@ module.exports = {
             .compare(password, result[0].password)
             .then((comparedResult) => {
               const uniqueString = jwt.sign(
-                { email, username ,_id},
+                { email, username, _id },
                 process.env.JWT_ACC_ACTIVATE1,
                 {}
               );
@@ -237,8 +261,8 @@ module.exports = {
         return res.status(404).json({ message: "No such user found" });
       }
       const userInfo = {
-        about:result['about'],
-        thoughts:[...result['createdThoughts']]
+        about: result["about"],
+        thoughts: [...result["createdThoughts"]],
       };
       console.log(userInfo);
       return res.status(200).json({ user: userInfo });
