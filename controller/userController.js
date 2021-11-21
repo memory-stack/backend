@@ -169,7 +169,7 @@ module.exports = {
 
       await user.save();
       const _id = user._id;
-      
+
       const authToken = jwt.sign(
         { email, username, _id },
         process.env.JWT_ACC_ACTIVATE
@@ -183,72 +183,39 @@ module.exports = {
     }
   },
 
-  login: (req, res) => {
-    var username = req.body.username;
-    var password = req.body.password;
+  login: async (req, res) => {
+    try {
+      let username = req.body.username.trim();
+      let password = req.body.password.trim();
 
-    User.find({ username: username })
-      .exec()
-      .then((result) => {
-        if (result.length) {
-          var email = result[0].email;
-          var _id = result[0]._id;
-          console.log(result);
-          console.log(password);
-          console.log(result[0].password);
-          console.log(email);
+      if (username === undefined || username.length === 0)
+        throw "No username given";
+      if (password === undefined || password.length === 0)
+        throw "No password given";
 
-          //password match and jwt generation
-          bcrypt
-            .compare(password, result[0].password)
-            .then((comparedResult) => {
-              const uniqueString = jwt.sign(
-                { email, username, _id },
-                process.env.JWT_ACC_ACTIVATE1,
-                {}
-              );
-              console.log(uniqueString);
-              console.log(comparedResult);
+      const user = await User.findOne({ username: username });
 
-              if (comparedResult) {
-                if (!result[0].isVerified) {
-                  res.status(200).json({
-                    message: "Please vefify your account to login",
-                    result: "false",
-                  });
-                } else {
-                  res.status(200).json({
-                    message: uniqueString,
-                    result: "true",
-                  });
-                }
-              } else {
-                res.status(200).json({
-                  message: "Incorrect username or password",
-                  result: "false",
-                });
-              }
-            })
-            .catch((error) => {
-              console.log(error);
-              res.status(500).json({
-                message: error,
-              });
-            });
-        } else {
-          console.log(username);
-          res.status(200).json({
-            message: "Incorrect username or password",
-            result: "false",
-          });
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        res.status(500).json({
-          message: error,
-        });
-      });
+      if (!user) throw "Incorrect username";
+
+      const isMatch = await bcrypt.compare(password, user.password);
+
+      const email = user.email;
+      const _id = user._id;
+      const uniqueString = jwt.sign(
+        { email, username, _id },
+        process.env.JWT_ACC_ACTIVATE1,
+        {}
+      );
+
+      if (!isMatch) throw "Incorrect password";
+
+      if (!user.isVerified) throw "Please verify your account to login";
+
+      return res.json({ success: true, message: uniqueString });
+    } catch (error) {
+      console.error(error);
+      return res.json({ success: false, error: error });
+    }
   },
 
   getUserDetails: async (req, res) => {
