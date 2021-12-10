@@ -61,23 +61,18 @@ module.exports = {
 
       const { email, username } = decodedToken;
       const newLog = req.body.text.trim();
+      const localDate = req.body.date;
+      const localTime = req.body.time;
       console.log(newLog);
       if (newLog == undefined || newLog.length === 0) {
         throw "Empty Log";
       }
-
+      const dateComponents = localDate.split('/').map(Number);
+      const localCreationDate = new Date(Date.UTC(dateComponents[2],dateComponents[1]-1,dateComponents[0]));
       const creator = await User.findOne({ email: email });
-      // const numberOfThoughts = creator.createdThoughts.length;
-      // if (numberOfThoughts === 0) {
-      //   throw "Didn't set thought of the day";
-      // }
-      // const lastThoughtDate = new Date(creator.createdThoughts[numberOfThoughts - 1].getTimestamp());
-      // const today = new Date();
-      // if (today.setUTCHours(00, 00, 00, 000) != lastThoughtDate.setUTCHours(00, 00, 00, 000)) {
-      //   throw "Didn't set thought of the day";
-      // }
 
-      const log = new Log({ logMessage: newLog, creator: creator._doc._id });
+      const log = new Log({ logMessage: newLog, creator: creator._doc._id ,localCreationDate:localCreationDate,localCreationTime:localTime});
+      console.log(log);
       await log.save();
       creator.createdLogs.push(log);
       await creator.save();

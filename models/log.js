@@ -12,7 +12,15 @@ const logSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },  
+  localCreationDate:{
+    type:Date,
+    required:true,
   },
+  localCreationTime:{
+    type:String,
+    required:true,
+  }
 });
 
 module.exports = mongoose.model("Log", logSchema);
