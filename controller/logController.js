@@ -95,50 +95,30 @@ module.exports = {
   },
   logView: async (req, res) => {
     try {
-      // let authToken = req.header("Authorization");
-      // authToken = authToken.substr(7, authToken.length);
-
-      // const decodedToken = jwt.verify(authToken, process.env.JWT_ACC_ACTIVATE1);
-
       const { username, date } = req.body;
       if (username === undefined) {
         throw "No username given";
       }
 
-      let dateObj = new Date(date);
-
-      let year = dateObj.getUTCFullYear();
-      let month = dateObj.getUTCMonth() + 1;
-      let day = dateObj.getUTCDate();
-      const newDate = `${year}-${month}-${day}`;
-      console.log(newDate);
-      console.log(new Date(newDate).setUTCHours(00, 00, 00, 000));
-      console.log(new Date(newDate).setUTCHours(23, 59, 59, 999));
+      var dateObj = date.split("/");   
+      let day = dateObj[0];
+      let month = dateObj[1]-1;
+      let year = dateObj[2];
+      
+      const newDate = new Date(Date.UTC(year, month, day));
       const result = await User.findOne({ username: username }, {})
-        .populate({
-          path: "createdThoughts",
-          match: {
-            createdAt: {
-              $gte: new Date(newDate).setUTCHours(00, 00, 00, 000),
-              $lte: new Date(newDate).setUTCHours(23, 59, 59, 999),
-            },
-          },
-        })
         .populate({
           path: "createdLogs",
           match: {
-            createdAt: {
+            localCreationDate: {
               $gte: new Date(newDate).setUTCHours(00, 00, 00, 000),
               $lte: new Date(newDate).setUTCHours(23, 59, 59, 999),
             },
           },
         });
       const userData = {
-        thought: [...result["createdThoughts"]],
         logs: [...result["createdLogs"]],
       };
-      console.log(result["createdThoughts"][0]);
-
       return res.json({ success: true, message: userData });
     } catch (error) {
       console.error(error);
