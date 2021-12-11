@@ -222,14 +222,17 @@ module.exports = {
     try {
       const username = req.params.username;
       const result = await User.findOne({ username: username }).populate(
-        "createdThoughts"
+        "loggedDates"
       );
       if (!result) {
         return res.status(404).json({ message: "No such user found" });
       }
+      const loggedDate = result.loggedDates.map(data=>{
+        return data.localCreationDate.toLocaleDateString("en-GB");
+      })
       const userInfo = {
         about: result["about"],
-        thoughts: [...result["createdThoughts"]],
+        date: loggedDate,
       };
       console.log(userInfo);
       return res.status(200).json({ user: userInfo });
