@@ -13,10 +13,10 @@ const userSchema = mongoose.Schema(
       type: String,
       default: "",
     },
-    createdThoughts: [
+    loggedDates: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Thought",
+        ref: "LogCreationDate",
       },
     ],
     createdLogs: [
