@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
-const thoughtSchema = new mongoose.Schema({
-  thought: {
-    type: String,
+const logCreationDateSchema = new mongoose.Schema({
+  localCreationDate: {
+    type: Date,
     required: true,
   },
   creator: {
@@ -15,4 +15,4 @@ const thoughtSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Thought", thoughtSchema);
+module.exports = mongoose.model("LogCreationDate", logCreationDateSchema);

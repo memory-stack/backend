@@ -1,5 +1,6 @@
 const User = require("../models/user.js");
 const Log = require("../models/log");
+const LogCreationDate = require("../models/logCreationDates");
 const jwt = require("jsonwebtoken");
 
 module.exports = {
@@ -72,9 +73,18 @@ module.exports = {
       const creator = await User.findOne({ email: email });
 
       const log = new Log({ logMessage: newLog, creator: creator._doc._id ,localCreationDate:localCreationDate,localCreationTime:localTime});
+      const createdDate = new LogCreationDate({creator:creator._doc._id,localCreationDate:localCreationDate});
+      const dateExist = await LogCreationDate.findOne({"creator":creator._doc._id,"localCreationDate":localCreationDate});
+      
+      console.log(dateExist);
       console.log(log);
       await log.save();
-      creator.createdLogs.push(log);
+      if(!dateExist)
+      {
+        await createdDate.save();
+        creator.loggedDates.push(createdDate);
+      }
+      creator.createdLogs.push(log);      
       await creator.save();
       const logNumber = creator.createdLogs.length;
 
