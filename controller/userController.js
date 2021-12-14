@@ -62,7 +62,7 @@ module.exports = {
               .then((result) => {
                 console.log(result);
                 res.redirect(
-                  "https://memory-stack.herokuapp.com/verification-success"
+                  "https://www.memorystack.live/verification-success"
                 );
               })
               .catch((error) => {
