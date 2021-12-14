@@ -141,7 +141,7 @@ module.exports =  sendEmail = (email, authToken) => {
                       <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                           <tr>
                               <td bgcolor="#222222" align="center" valign="top" style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #EEEEEE; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;">
-                                  <h1 style="font-size: 48px; font-weight: 400; margin: 2;">Welcome!</h1> <img src=" https://img.icons8.com/clouds/100/000000/handshake.png" width="125" height="120" style="display: block; border: 0px;" />
+                                  <h1 style="font-size: 48px; font-weight: 400; margin: 2;">Welcome!</h1> <img src="https://img.icons8.com/clouds/100/000000/handshake.png" width="125" height="120" style="display: block; border: 0px;" />
                               </td>
                           </tr>
                       </table>
@@ -195,14 +195,9 @@ module.exports =  sendEmail = (email, authToken) => {
       if (err) {
         console.log("Error occured!");
         console.log(err);
-        res.status(500).json({
-          message: err,
-        });
+        return err;
       } else {
         console.log("Email sent!");
-        res.status(200).json({
-          message: "email sent",
-        });
       }
     });
   };
