@@ -1,26 +1,33 @@
 const nodemailer = require("nodemailer");
+const { google } = require("googleapis");
 
+const oAuth2Client = new google.auth.OAuth2(
+  process.env.GMAIL_CLIENT_ID,
+  process.env.GMAIL_CLIENT_SECRET,
+  process.env.GMAIL_REDIRECT_URI
+);
 
-module.exports =  sendEmail = (email, authToken) => {
-    const gmail_email = process.env.GMAIL_EMAIL;
-    const gmail_password = process.env.GMAIL_PASSWORD;
-    var transport = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      requireTLS: true,
-      auth: {
-        user: gmail_email,
-        pass: gmail_password,
-      },
-      from:gmail_email
-    });
-  
-    var mailOptions = {
-      from: "memory-stack",
-      to: email,
-      subject: "Email Confirmation for Account Activation",
-      html: `<!DOCTYPE html>
+oAuth2Client.setCredentials({ refresh_token: process.env.GMAIL_REFRESH_TOKEN });
+
+module.exports = sendEmail = async(email, authToken) => {
+  const accessToken = await oAuth2Client.getAccessToken();
+  var transport = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        type: "OAuth2",
+        user: process.env.GMAIL_EMAIL,
+        clientId: process.env.GMAIL_CLIENT_ID,
+        clientSecret: process.env.GMAIL_CLIENT_SECRET,
+        refreshToken: process.env.GMAIL_REFRESH_TOKEN,
+        accessToken: accessToken,
+    }
+  });
+
+  var mailOptions = {
+    from: "Memory Stack",
+    to: email,
+    subject: "Email Confirmation for Account Activation",
+    html: `<!DOCTYPE html>
       <html>
       <head>
           <title></title>
@@ -189,15 +196,15 @@ module.exports =  sendEmail = (email, authToken) => {
           </table>
       </body>
       </html>`,
-    };
-  
-    transport.sendMail(mailOptions, (err, res) => {
-      if (err) {
-        console.log("Error occured!");
-        console.log(err);
-        return err;
-      } else {
-        console.log("Email sent!");
-      }
-    });
   };
+
+  transport.sendMail(mailOptions, (err, res) => {
+    if (err) {
+      console.log("Error occured!");
+      console.log(err);
+      return err;
+    } else {
+      console.log("Email sent!");
+    }
+  });
+};
