@@ -1,7 +1,7 @@
 const User = require("../models/user.js");
-const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const sendEmail = require("../utils/verificationMail");
 
 const validateEmail = (email) => {
   const re =
@@ -9,47 +9,6 @@ const validateEmail = (email) => {
   return re.test(String(email).toLowerCase());
 };
 
-// function for sending email using NodeMail
-const sendEmail = (email, authToken) => {
-  const gmail_email = process.env.GMAIL_EMAIL;
-  const gmail_password = process.env.GMAIL_PASSWORD;
-  var transport = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    requireTLS: true,
-    auth: {
-      user: gmail_email,
-      pass: gmail_password,
-    },
-  });
-
-  var mailOptions = {
-    from: "memory-stack",
-    to: email,
-    subject: "Email Confirmation for Account Activation",
-    html: `<h1>Thank You For Choosing Us</h1>
-            <p1>Press <a href=https://api-memory-stack.herokuapp.com/api/verify/${authToken} > here </a> to verify your email.</p1> <br><br>
-            <p1>The Link will expire in <strong>20 minutes!</strong></p1>`,
-  };
-
-  console.log(mailOptions);
-
-  transport.sendMail(mailOptions, (err, res) => {
-    if (err) {
-      console.log("Error occured!");
-      console.log(err);
-      res.status(500).json({
-        message: err,
-      });
-    } else {
-      console.log("Email sent!");
-      res.status(200).json({
-        message: "email sent",
-      });
-    }
-  });
-};
 
 module.exports = {
   userExists: (req, res) => {
@@ -175,7 +134,7 @@ module.exports = {
         process.env.JWT_ACC_ACTIVATE
       );
 
-      const result = sendEmail(email, authToken);
+      sendEmail(email, authToken);
       return res.json({ success: true, message: "User created" });
     } catch (error) {
       console.error(error);
