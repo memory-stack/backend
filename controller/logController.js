@@ -64,7 +64,6 @@ module.exports = {
       const newLog = req.body.text.trim();
       const localDate = req.body.date;
       const localTime = req.body.time;
-      console.log(newLog);
       if (newLog == undefined || newLog.length === 0) {
         throw "Empty Log";
       }
@@ -76,8 +75,6 @@ module.exports = {
       const createdDate = new LogCreationDate({creator:creator._doc._id,localCreationDate:localCreationDate});
       const dateExist = await LogCreationDate.findOne({"creator":creator._doc._id,"localCreationDate":localCreationDate});
       
-      console.log(dateExist);
-      console.log(log);
       await log.save();
       if(!dateExist)
       {

@@ -18,12 +18,10 @@ module.exports = {
       .exec()
       .then((result) => {
         if (result.length) {
-          console.log("User already exists.");
           res.status(200).json({
             message: "True",
           });
         } else {
-          console.log("User doesn't exists.");
           res.status(200).json({
             message: "False",
           });
@@ -39,7 +37,6 @@ module.exports = {
 
   verifyToken: (req, res) => {
     const { authToken } = req.params;
-    console.log("hello");
     if (authToken) {
       jwt.verify(
         authToken,
@@ -51,16 +48,12 @@ module.exports = {
               .json({ error: "Incorrect or Expired Link." });
           }
           const { email, username } = decodedToken;
-          console.log(email);
-          console.log(username);
           const user = User.find({ email: email });
           if (user) {
-            // console.log(user);
 
             User.update({ username: username }, { $set: { isVerified: true } })
               .exec()
               .then((result) => {
-                console.log(result);
                 res.redirect(
                   "https://www.memorystack.live/verification-success"
                 );
@@ -105,7 +98,6 @@ module.exports = {
         throw "No about given";
 
       email = email.toLowerCase();
-      console.log(email);
       if (!validateEmail(email)) throw "Email is invalid";
 
       let user = await User.findOne({
@@ -193,7 +185,6 @@ module.exports = {
         about: result["about"],
         date: loggedDate,
       };
-      console.log(userInfo);
       return res.status(200).json({ user: userInfo });
     } catch (error) {
       return res.status(500).json({ message: error });
