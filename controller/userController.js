@@ -9,6 +9,7 @@ const validateEmail = (email) => {
   return re.test(String(email).toLowerCase());
 };
 
+const invalidChar = ['!','@','#','$','%','^','&','*','(',')','-','=','+','{','}','[',']',':',';','\'','"',',','<','>','.','?','/'];
 
 module.exports = {
   userExists: (req, res) => {
@@ -109,6 +110,11 @@ module.exports = {
       }
       if (user && user.username == username) {
         throw "User with this username already exist";
+      }
+
+      for(let invalid of invalidChar){
+        if(username.includes(invalid))
+          throw 'Username cannot have !,@,#,$,%,^,&,*,(,),-,=,+,:,;,:,?';
       }
 
       user = new User({
