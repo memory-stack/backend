@@ -19,13 +19,12 @@ router.get ('/verify/:authToken', userController.verifyToken);  // verify the au
 router.post('/signup'           , userController.signup);
 router.post('/login'            , userController.login);
 router.get ('/displayLogs/:username'      , logController.displayLogs);
-router.post('/createLog'        , logController.createLog); //done - handled if no user is matched, if no new loglength is 0
-// router.post('/setThought'       , thoughtController.setThought);
-// router.get ('/thought/:username'          , thoughtController.allThought); //dont upload on github, done - handled if no user is matched
+router.post('/createLog'        , logController.createLog)
 router.post('/setAbout'         , aboutController.setAbout);
 router.get ('/about'            , aboutController.about); //dont upload on github
 router.get ('/user/:username'    , userController.getUserDetails);
 router.post('/logView'           , logController.logView); 
 router.get ('/todaysLogs'        , logController.todaysLogs);     
+router.get ('/recentLogs',logController.recentLogs);
 
 module.exports = router;
