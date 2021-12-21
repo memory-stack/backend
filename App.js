@@ -27,7 +27,7 @@ app.get("/logStream", async (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
 
-  res.setHeader("Access-Control-Allow-Origin", "https://www.memorystack.live");
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.flushHeaders();
   Log.watch().on("change", async (change) => {
     const logChange = { ...change["fullDocument"] };
