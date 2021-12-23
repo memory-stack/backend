@@ -171,7 +171,7 @@ module.exports = sendEmail = async(email, authToken) => {
                                               <td bgcolor="#222222" align="center" style=" padding: 20px 30px 60px 30px;">
                                                   <table border="0" cellspacing="0" cellpadding="0">
                                                       <tr>
-                                                          <td align="center" style="border-radius: 3px;" bgcolor="#A772FF"><a href=https://api-memory-stack.herokuapp.com/api/verify/${authToken} target="_blank" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 0px solid #FFA73B; display: inline-block;">Confirm Account</a></td>
+                                                          <td align="center" style="border-radius: 3px;" bgcolor="#A772FF"><a href=https://mstak.tech/api/verify/${authToken} target="_blank" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 0px solid #FFA73B; display: inline-block;">Confirm Account</a></td>
                                                       </tr>
                                                   </table>
                                               </td>
