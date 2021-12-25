@@ -26,5 +26,5 @@ router.get ('/user/:username'    , userController.getUserDetails);
 router.post('/logView'           , logController.logView); 
 router.get ('/todaysLogs'        , logController.todaysLogs);     
 router.get ('/recentLogs',logController.recentLogs);
-
+router.get ('/getLogs', logController.getLogs);
 module.exports = router;
