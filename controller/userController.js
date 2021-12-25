@@ -132,7 +132,7 @@ module.exports = {
         process.env.JWT_ACC_ACTIVATE
       );
 
-      // sendEmail(email, authToken);
+      sendEmail(email, authToken);
       return res.json({ success: true, message: "User created" });
     } catch (error) {
       console.error(error);
