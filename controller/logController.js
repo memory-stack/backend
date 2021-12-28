@@ -134,6 +134,7 @@ module.exports = {
       });
       const userData = {
         logs: [...result["createdLogs"]],
+        color: result["color"],
       };
       return res.json({ success: true, message: userData });
     } catch (error) {
