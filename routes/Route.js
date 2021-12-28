@@ -18,14 +18,14 @@ router.post('/userExists'       , userController.userExists);  //username exists
 router.get ('/verify/:authToken', userController.verifyToken);  // verify the auth token
 router.post('/signup'           , userController.signup);
 router.post('/login'            , userController.login);
-router.get ('/user/:username'   , userController.getUserDetails);
-router.post('/setUserColor'     , userController.setUserColor);
+router.get ('/displayLogs/:username'      , logController.displayLogs);
+router.post('/createLog'        , logController.createLog)
 router.post('/setAbout'         , aboutController.setAbout);
-router.get ('/about'            , aboutController.about); 
-router.get ('/displayLogs/:username' , logController.displayLogs);
-router.post('/createLog'             , logController.createLog)
-router.post('/logView'               , logController.logView); 
-router.get ('/todaysLogs'            , logController.todaysLogs);     
-router.get ('/recentLogs'            , logController.recentLogs);
-
+router.get ('/about'            , aboutController.about); //dont upload on github
+router.get ('/user/:username'    , userController.getUserDetails);
+router.post('/logView'           , logController.logView); 
+router.get ('/todaysLogs'        , logController.todaysLogs);     
+router.get ('/recentLogs',logController.recentLogs);
+router.get ('/getLogs', logController.getLogs);
+router.post('/setUserColor'     , userController.setUserColor);
 module.exports = router;

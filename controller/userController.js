@@ -190,6 +190,7 @@ module.exports = {
       const userInfo = {
         about: result["about"],
         date: loggedDate,
+        color: result["color"]
       };
       return res.status(200).json({ user: userInfo });
     } catch (error) {

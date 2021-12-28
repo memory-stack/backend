@@ -40,7 +40,7 @@ const userSchema = mongoose.Schema(
     color: {
       type: String,
       default : "purple",
-    }
+    },
   },
   { timestamps: true }
 );
