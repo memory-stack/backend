@@ -132,8 +132,10 @@ module.exports = {
           },
         },
       });
+      if (result["color"] == undefined) result["color"] = "purple";
       const userData = {
         logs: [...result["createdLogs"]],
+        color: result["color"],
       };
       return res.json({ success: true, message: userData });
     } catch (error) {
@@ -150,25 +152,37 @@ module.exports = {
       return res.json({ success: false, message: error });
     }
   },
-  getLogs: async(req,res)=>{
+  getLogs: async (req, res) => {
     try {
-      let {page=1,limit=15,lastElementId} =req.query;
-      if(limit>30)
-      limit=30;
+      let { page = 1, limit = 15, lastElementId } = req.query;
+      if (limit > 30) limit = 30;
       let date;
-      if(lastElementId){
-        const timestamp = lastElementId.toString().substring(0,8);
-        date = new Date(parseInt(timestamp,16)*1000)
-      }else{
+      if (lastElementId) {
+        const timestamp = lastElementId.toString().substring(0, 8);
+        date = new Date(parseInt(timestamp, 16) * 1000);
+      } else {
         date = new Date();
       }
-      const allLogs = await Log.find({createdAt:{"$lt":new Date(date)}}).limit(limit*1).skip((page-1)*limit).sort({createdAt:-1}).populate("creator","username");
-      const lastElement = allLogs[allLogs.length-1]["_id"].toString();
-      console.log(lastElement);
-      return res.json({success:true,total:allLogs.length,lastElementId:lastElement,message:allLogs});
+      const allLogs = await Log.find({ createdAt: { $lt: new Date(date) } })
+        .limit(limit * 1)
+        .skip((page - 1) * limit)
+        .sort({ createdAt: -1 })
+        .populate("creator", "username color");
+      const lastElement = allLogs[allLogs.length - 1]["_id"].toString();
+      const result = allLogs.map((log) => {
+        if (log["creator"]["color"] == undefined)
+          log["creator"]["color"] = "purple";
+        return log;
+      });
+      return res.json({
+        success: true,
+        total: allLogs.length,
+        lastElementId: lastElement,
+        message: result,
+      });
     } catch (error) {
       console.error(error);
-      return res.json({success:false,message:error});
+      return res.json({ success: false, message: error });
     }
-  }
+  },
 };

@@ -27,4 +27,5 @@ router.post('/logView'           , logController.logView);
 router.get ('/todaysLogs'        , logController.todaysLogs);     
 router.get ('/recentLogs',logController.recentLogs);
 router.get ('/getLogs', logController.getLogs);
+router.post('/setUserColor'     , userController.setUserColor);
 module.exports = router;
