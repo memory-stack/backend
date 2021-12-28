@@ -197,4 +197,22 @@ module.exports = {
       return res.status(500).json({ message: error });
     }
   },
+
+  setUserColor: async (req,res) =>{
+    var updatedColor = req.body.color;
+    try {
+      let authToken = req.header("Authorization");
+      authToken = authToken.substr(7, authToken.length);
+
+      const decodedToken = jwt.verify(authToken, process.env.JWT_ACC_ACTIVATE1);
+      const { email, username } = decodedToken;
+      await User.updateOne({ username: username }, { $set: { color: updatedColor } });
+      console.log("Color updated!");
+      return res.status(200).json({ message: "Color updated!" });
+    }
+    catch (error) {
+      console.error(error);
+      return res.json({ success: false, message: error });
+    }
+  },
 };

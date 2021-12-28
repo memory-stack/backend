@@ -37,9 +37,9 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    color:{
+    color: {
       type: String,
-      default: "Purple",
+      default : "purple",
     },
   },
   { timestamps: true }
