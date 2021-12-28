@@ -187,6 +187,8 @@ module.exports = {
       const loggedDate = result.loggedDates.map(data=>{
         return data.localCreationDate.toLocaleDateString("en-GB");
       })
+      if(result['color']==undefined)
+      result['color']='purple';
       const userInfo = {
         about: result["about"],
         date: loggedDate,
