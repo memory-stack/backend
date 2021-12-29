@@ -37,7 +37,9 @@ app.get("/logStream", async (req, res) => {
   Log.watch().on("change", async (change) => {
     const logChange = { ...change["fullDocument"] };
     const newLog = new Log(logChange);
-    await newLog.populate("creator", "username");
+    await newLog.populate("creator", "username color");
+    if(newLog['creator']['color']==undefined)
+      newLog['creator']['color']='purple';
     res.write(`data: ${JSON.stringify(newLog)}\n\n`);
   });
 });
