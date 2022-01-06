@@ -70,6 +70,28 @@ module.exports = {
       if (newLog == undefined || newLog.length === 0) {
         throw "Empty Log";
       }
+
+      const timeComponents = localTime.split(" ");
+      if(timeComponents.length!=2){
+        throw "Invalid Time";
+      }
+      const timeZone = timeComponents[1]; // format: am/pm
+      if((timeZone[0]!='a' || timeZone[0]!='p') && timeZone[1]!='m'){
+        throw "Invalid Time";
+      }
+
+      const time= timeComponents[0].split(":").map(Number); // format: hh:mm:ss
+      if(time.length!=3 || timeComponents[0].length!=8){
+        throw "Invalid Time";
+      }
+      const hour=time[0];
+      const minute=time[1];
+      const second=time[2];
+      if((hour<1 || hour>12) || (minute<0 || minute>59) || (second<0 || second>59)){
+        throw "Invalid Time";
+      }
+      
+
       const dateComponents = localDate.split("/").map(Number);
       const localCreationDate = new Date(
         Date.UTC(dateComponents[2], dateComponents[1] - 1, dateComponents[0])
