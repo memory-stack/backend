@@ -3,6 +3,8 @@ const Log = require("../models/log");
 const LogCreationDate = require("../models/logCreationDates");
 const jwt = require("jsonwebtoken");
 
+function leapYear(year) { return (year % 100 === 0) ? (year % 400 === 0) : (year % 4 === 0); }
+
 module.exports = {
   displayLogs: async (req, res) => {
     try {
@@ -70,7 +72,56 @@ module.exports = {
       if (newLog == undefined || newLog.length === 0) {
         throw "Empty Log";
       }
+
+      const timeComponents = localTime.split(" ");
+      if(timeComponents.length!=2){
+        throw "Invalid Time";
+      }
+      const timeZone = timeComponents[1]; // format: am/pm
+      if((timeZone[0]!='a' || timeZone[0]!='p') && timeZone[1]!='m'){
+        throw "Invalid Time";
+      }
+
+      const time= timeComponents[0].split(":").map(Number); // format: hh:mm:ss
+      if(time.length!=3 || timeComponents[0].length!=8){
+        throw "Invalid Time";
+      }
+      const hour=time[0];
+      const minute=time[1];
+      const second=time[2];
+      if((hour<1 || hour>12) || (minute<0 || minute>59) || (second<0 || second>59)){
+        throw "Invalid Time";
+      }
+      
+
       const dateComponents = localDate.split("/").map(Number);
+      const day=dateComponents[0];
+      const month=dateComponents[1];
+      const year=dateComponents[2];
+      if(year>=2022){  // considering all logs will be greater than year 2022
+        if(month<=0 || month>=13){
+          throw "Invalid Month";
+        }
+        else if(day<=0 || day>=32){
+          throw "Invalid Date";
+        }
+        else if(month===2){ // For February
+          if(leapYear(year) && day>29){
+            throw "Invalid Date";
+          }
+          else if(!leapYear(year) && day>28){
+            throw "Invalid Date";
+          }
+        }
+        else if((month===4 || month ===6 || month===9 || month===11) && (day>30)){
+          throw "Invalid Date";
+        }
+        else if(day>31){
+          throw "Invalid Date";
+        }
+      }else{
+        throw "Invalid Year";
+      }
       const localCreationDate = new Date(
         Date.UTC(dateComponents[2], dateComponents[1] - 1, dateComponents[0])
       );
